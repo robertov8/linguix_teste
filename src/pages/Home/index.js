@@ -1,27 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
-
 import { GridList, GridListTile } from '@material-ui/core';
+
+import api from '../../services/api';
 
 import { useStyles } from './styles';
 import './styles.css';
+import Loading from '../../components/Loading';
 
 export default function Home() {
   const classes = useStyles();
-  const [photos, setPhotos] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-  const URL = 'https://api.adorable.io/avatars/500';
+  const [photos, setPhotos] = useState([]);
+
+  useEffect(() => {
+    loadPhotos().then();
+  }, []);
+
+  async function loadPhotos() {
+    try {
+      const response = await api.get('photos/random', {
+        params: { count: 14 },
+      });
+
+      const responsePhotos = response.data.map(photo => ({
+        id: photo.id,
+        alt_description: photo.alt_description,
+        urls: photo.urls,
+      }));
+
+      setPhotos([...photos, ...responsePhotos]);
+    } catch (e) {
+      console.error(`e => ${e}`);
+    }
+  }
 
   function loadMore() {
-    let lastPhoto = photos[photos.length - 1];
-
-    const more5Photos = [];
-
-    for (let i = 0; i < 5; i += 1) {
-      lastPhoto += 1;
-      more5Photos.push(lastPhoto);
-    }
-
-    setPhotos([...photos, ...more5Photos]);
+    if (photos.length < 13) return;
+    loadPhotos().then();
   }
 
   return (
@@ -29,15 +44,12 @@ export default function Home() {
       <InfiniteScroll
         pageStart={0}
         loadMore={loadMore}
-        loader={
-          <div className="loader" key={0}>
-            Loading...
-          </div>
-        }>
+        hasMore={true || false}
+        loader={<Loading key={0} />}>
         <GridList cols={2}>
           {photos.map(photo => (
-            <GridListTile key={photo}>
-              <img src={`${URL}/${photo}`} alt={photo} />
+            <GridListTile key={photo.id}>
+              <img src={photo.urls.thumb} alt={photo.alt_description} />
             </GridListTile>
           ))}
         </GridList>
