@@ -1,7 +1,6 @@
 @media screen and (min-width: 600px) {
   .MuiGridList-root {
     margin: 10px !important;
-    width: 500px;
   }
 }
 

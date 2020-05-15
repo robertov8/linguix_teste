@@ -1,42 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
 import { GridList, GridListTile } from '@material-ui/core';
 
-import api from '../../services/api';
-
+import { loadPhotosAction } from '../../store/modules/album/action';
+import Loading from '../../components/Loading';
 import { useStyles } from './styles';
 import './styles.css';
-import Loading from '../../components/Loading';
 
 export default function Home() {
+  const photos = useSelector(state => state.album.photos);
+  const dispatch = useDispatch();
+  const [columns, setColumns] = useState(2);
   const classes = useStyles();
-  const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
-    loadPhotos().then();
+    loadPhotos();
+    const width = window.innerWidth;
+
+    if (width > 1440) {
+      setColumns(5);
+    } else if (width > 999) {
+      setColumns(4);
+    } else if (width > 500) {
+      setColumns(3);
+    }
   }, []);
 
-  async function loadPhotos() {
-    try {
-      const response = await api.get('photos/random', {
-        params: { count: 14 },
-      });
-
-      const responsePhotos = response.data.map(photo => ({
-        id: photo.id,
-        alt_description: photo.alt_description,
-        urls: photo.urls,
-      }));
-
-      setPhotos([...photos, ...responsePhotos]);
-    } catch (e) {
-      console.error(`e => ${e}`);
-    }
+  function loadPhotos() {
+    dispatch(loadPhotosAction());
   }
 
   function loadMore() {
     if (photos.length < 13) return;
-    loadPhotos().then();
+    loadPhotos();
   }
 
   return (
@@ -44,12 +41,12 @@ export default function Home() {
       <InfiniteScroll
         pageStart={0}
         loadMore={loadMore}
-        hasMore={true || false}
+        hasMore
         loader={<Loading key={0} />}>
-        <GridList cols={2}>
+        <GridList cols={columns}>
           {photos.map(photo => (
             <GridListTile key={photo.id}>
-              <img src={photo.urls.thumb} alt={photo.alt_description} />
+              <img src={photo.thumb} alt={photo.alt_description} />
             </GridListTile>
           ))}
         </GridList>
