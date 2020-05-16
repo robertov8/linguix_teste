@@ -1,5 +1,4 @@
 import api from '../../../services/api';
-import randomID from '../../../utils/randomID';
 
 export function loadPhotosAction() {
   return async (dispatch, getState) => {
@@ -53,8 +52,13 @@ export function loadPhotoAction(id) {
     try {
       const response = await api.get(`photos/${id}`);
 
+      const { user, urls, alt_description } = response.data;
+
       dispatch(changeForwardedAction(true));
-      dispatch({ type: '@album/LOAD_PHOTO', payload: response.data });
+      dispatch({
+        type: '@album/LOAD_PHOTO',
+        payload: { user, urls, alt_description },
+      });
     } catch (e) {
       console.error(`e => ${e}`);
     }

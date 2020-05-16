@@ -13,6 +13,7 @@ export default function Routes() {
       <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/photo/:id" component={Photo} />
+        <Route path="*" component={Home} />
       </Switch>
     </BrowserRouter>
   );
