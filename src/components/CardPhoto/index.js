@@ -15,7 +15,7 @@ export default function CardPhoto({ photo }) {
   const classes = useStyles();
 
   return (
-    <Card className={classes.card}>
+    <Card data-testid="card-photo" className={classes.card}>
       <CardHeader
         avatar={
           <Avatar aria-label="user" src={photo.user.profile_image.small} />
