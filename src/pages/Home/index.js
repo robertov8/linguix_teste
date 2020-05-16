@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
 import { GridList, GridListTile } from '@material-ui/core';
+
+import randomID from '../../utils/randomID';
 
 import { loadPhotosAction } from '../../store/modules/album/action';
 import Loading from '../../components/Loading';
 import { useStyles } from './styles';
-import './styles.css';
 
 export default function Home() {
   const photos = useSelector(state => state.album.photos);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [columns, setColumns] = useState(2);
   const classes = useStyles();
 
@@ -36,8 +39,12 @@ export default function Home() {
     loadPhotos();
   }
 
+  function openPhoto(id) {
+    history.push(`/photo/${id}`);
+  }
+
   return (
-    <div className={classes.root}>
+    <div className={classes.container}>
       <InfiniteScroll
         pageStart={0}
         loadMore={loadMore}
@@ -45,7 +52,7 @@ export default function Home() {
         loader={<Loading key={0} />}>
         <GridList cols={columns}>
           {photos.map(photo => (
-            <GridListTile key={photo.id}>
+            <GridListTile key={randomID(8)} onClick={() => openPhoto(photo.id)}>
               <img src={photo.thumb} alt={photo.alt_description} />
             </GridListTile>
           ))}
