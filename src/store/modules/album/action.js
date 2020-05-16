@@ -1,8 +1,15 @@
 import api from '../../../services/api';
-import radomID from '../../../utils/radomID';
+import randomID from '../../../utils/randomID';
 
 export function loadPhotosAction() {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { album } = getState();
+
+    if (album.forwarded && album.photos.length > 1) {
+      dispatch(changeForwardedAction());
+      return;
+    }
+
     const photos = await requestPhotos();
     dispatch({ type: '@album/LOAD_PHOTOS', payload: photos });
   };
@@ -120,9 +127,31 @@ async function requestPhotosDebug() {
       ];
 
       const response = photos.map(photo => {
-        return { ...photo, id: radomID(8) };
+        return { ...photo, id: randomID(8) };
       });
       resolve(response);
     }, 1000);
   });
+}
+
+export function loadPhotoAction(id) {
+  return async dispatch => {
+    dispatch({ type: '@album/CHANGE_LOADING' });
+    dispatch({ type: '@album/CLEAR_PHOTO' });
+
+    try {
+      const response = await api.get(`photos/${id}`);
+
+      dispatch(changeForwardedAction(true));
+      dispatch({ type: '@album/LOAD_PHOTO', payload: response.data });
+    } catch (e) {
+      console.error(`e => ${e}`);
+    }
+
+    dispatch({ type: '@album/CHANGE_LOADING' });
+  };
+}
+
+export function changeForwardedAction(status = false) {
+  return { type: '@album/CHANGE_FORWARDED', payload: status };
 }
