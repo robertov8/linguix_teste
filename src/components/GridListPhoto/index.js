@@ -13,7 +13,7 @@ export default function GridListPhoto({ columns, photos }) {
   }
 
   return (
-    <GridList cols={columns}>
+    <GridList data-testid="grid-photo" cols={columns}>
       {photos.map(photo => (
         <GridListTile key={randomID(8)} onClick={() => openPhoto(photo.id)}>
           <img src={photo.thumb} alt={photo.alt_description} />

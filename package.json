@@ -19,7 +19,13 @@
       "@testing-library/jest-dom/extend-expect"
     ],
     "collectCoverageFrom": [
-      "!src/index.js", "!src/App.js", "!src/routes.js", "!src/styles/global.js", "!src/services/api.js"
+      "!src/index.js",
+      "!src/App.js",
+      "!src/routes.js",
+      "!src/store/index.js",
+      "!src/store/modules/rootReducer.js",
+      "!src/styles/global.js",
+      "!src/services/api.js"
     ],
     "coverageDirectory": "coverage"
   },
